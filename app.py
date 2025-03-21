@@ -11,20 +11,32 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route('/solve', methods=['POST'])
-def solve():
+@app.route('/solve_puzzle', methods=['POST'])
+def solve_puzzle():
     data = request.get_json()
     estado_inicial = data['estado_inicial']
     solucion = data['solucion']
-    algoritmo = data.get('algoritmo', 'dfs_puzzle')
+    
+    nodo_solucion = dfs_puzzle(estado_inicial, solucion)
 
-    if algoritmo == 'dfs_puzzle':
-        nodo_solucion = dfs_puzzle(estado_inicial, solucion)
-    elif algoritmo == 'dfs_rec':
-        nodo_inicial = Nodo(estado_inicial)
-        nodo_solucion = dfs_rec(nodo_inicial, solucion, [])
-    else:
-        return jsonify({'error': 'Algoritmo no soportado'}), 400
+    resultado = []
+    nodo = nodo_solucion
+    while nodo.get_padre() is not None:
+        resultado.append(nodo.get_datos())
+        nodo = nodo.get_padre()
+    resultado.append(estado_inicial)
+    resultado.reverse()
+
+    return jsonify({'resultado': resultado})
+
+@app.route('/solve_dfs', methods=['POST'])
+def solve_dfs():
+    data = request.get_json()
+    estado_inicial = data['estado_inicial']
+    solucion = data['solucion']
+    
+    nodo_inicial = Nodo(estado_inicial)
+    nodo_solucion = dfs_rec(nodo_inicial, solucion, [])
 
     resultado = []
     nodo = nodo_solucion
