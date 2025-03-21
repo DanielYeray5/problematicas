@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DFS Solver</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-4">Solver</h1>
+        <form id="solver-form" class="space-y-4">
+            <div>
+                <label for="algoritmo" class="block text-sm font-medium text-gray-700">Algoritmo:</label>
+                <select id="algoritmo" name="algoritmo" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="dfs_puzzle">DFS Puzzle</option>
+                    <option value="dfs_rec">DFS Recursivo</option>
+                </select>
+            </div>
+            <div>
+                <label for="estado_inicial" class="block text-sm font-medium text-gray-700">Estado Inicial:</label>
+                <input type="text" id="estado_inicial" name="estado_inicial" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="solucion" class="block text-sm font-medium text-gray-700">Solución:</label>
+                <input type="text" id="solucion" name="solucion" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <div>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Resolver</button>
+            </div>
+        </form>
+        <h2 class="text-xl font-bold mt-6">Resultado:</h2>
+        <pre id="resultado" class="bg-gray-100 p-4 rounded-md mt-2"></pre>
+    </div>
+
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md mt-8">
+        <h1 class="text-2xl font-bold mb-4">Optimality Solver</h1>
+        <form id="optimality-form" class="space-y-4">
+            <div>
+                <label for="conexiones" class="block text-sm font-medium text-gray-700">Conexiones (formato JSON):</label>
+                <textarea id="conexiones" name="conexiones" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+            </div>
+            <div>
+                <label for="estado_inicial_optimality" class="block text-sm font-medium text-gray-700">Estado Inicial:</label>
+                <input type="text" id="estado_inicial_optimality" name="estado_inicial_optimality" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="solucion_optimality" class="block text-sm font-medium text-gray-700">Solución:</label>
+                <input type="text" id="solucion_optimality" name="solucion_optimality" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <div>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Resolver Optimality</button>
+            </div>
+        </form>
+        <h2 class="text-xl font-bold mt-6">Resultado Optimality:</h2>
+        <pre id="resultado_optimality" class="bg-gray-100 p-4 rounded-md mt-2"></pre>
+    </div>
+
+    <script>
+        document.getElementById('solver-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const estadoInicial = document.getElementById('estado_inicial').value.split(',').map(Number);
+            const solucion = document.getElementById('solucion').value.split(',').map(Number);
+            const algoritmo = document.getElementById('algoritmo').value;
+            
+            fetch('/solve', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ estado_inicial: estadoInicial, solucion: solucion, algoritmo: algoritmo })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('resultado').textContent = data.error;
+                } else {
+                    const resultado = data.resultado.map(arr => arr.join(', ')).join('\n');
+                    document.getElementById('resultado').textContent = resultado;
+                }
+            })
+            .catch(error => {
+                document.getElementById('resultado').textContent = 'Error: ' + error;
+            });
+        });
+
+        document.getElementById('optimality-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const conexiones = JSON.parse(document.getElementById('conexiones').value);
+            const estadoInicial = document.getElementById('estado_inicial_optimality').value;
+            const solucion = document.getElementById('solucion_optimality').value;
+            
+            fetch('/solve_optimality', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ conexiones: conexiones, estado_inicial: estadoInicial, solucion: solucion })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('resultado_optimality').textContent = data.error;
+                } else {
+                    const resultado = data.resultado.join(' -> ');
+                    document.getElementById('resultado_optimality').textContent = resultado;
+                }
+            })
+            .catch(error => {
+                document.getElementById('resultado_optimality').textContent = 'Error: ' + error;
+            });
+        });
+    </script>
+</body>
+</html>
