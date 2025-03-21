@@ -1,15 +1,14 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DFS Solver</title>
+    <title>Examen</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="flex space-x-8">
+    <div class="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
         <div class="bg-white p-8 rounded shadow-md w-full max-w-md mb-8">
-            <h1 class="text-2xl font-bold mb-4">Solver</h1>
+            <h1 class="text-2xl font-bold mb-4">Puzzle y DFS</h1>
             <form id="solver-form" class="space-y-4">
                 <div>
                     <label for="algoritmo" class="block text-sm font-medium text-gray-700">Algoritmo:</label>
@@ -55,7 +54,7 @@
                     <button type="button" id="clear-optimality-form" class="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">Limpiar</button>
                 </div>
             </form>
-            <h2 class="text-xl font-bold mt-6">Resultado Optimality:</h2>
+            <h2 class="text-xl font-bold mt-6">Resultado:</h2>
             <pre id="resultado_optimality" class="bg-gray-100 p-4 rounded-md mt-2"></pre>
         </div>
     </div>
